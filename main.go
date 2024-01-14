@@ -79,9 +79,34 @@ func isValidMove(board Board, row, col int, player string) bool {
 	if board[row][col] != EmptyCell {
 		return false
 	}
-	// Check if the move flips any opponent pieces
-	// Implement your Reversi move validation logic here
-	return true
+
+	// Define the eight possible directions to check for opponent's pieces to flip
+	directions := [][2]int{
+		{-1, -1}, {-1, 0}, {-1, 1},
+		{0, -1}, {0, 1},
+		{1, -1}, {1, 0}, {1, 1},
+	}
+
+	// Iterate through each direction to check for opponent's pieces to flip
+	for _, dir := range directions {
+		dx, dy := dir[0], dir[1]
+		x, y := row+dx, col+dy
+		oppPiecesToFlip := []int{}
+
+		// Check if there are opponent's pieces in the current direction
+		for x >= 0 && x < BoardSize && y >= 0 && y < BoardSize && board[x][y] != EmptyCell && board[x][y] != player {
+			oppPiecesToFlip = append(oppPiecesToFlip, x*BoardSize+y)
+			x += dx
+			y += dy
+		}
+
+		// If there are opponent's pieces to flip in this direction, the move is valid
+		if len(oppPiecesToFlip) > 0 && x >= 0 && x < BoardSize && y >= 0 && y < BoardSize && board[x][y] == player {
+			return true
+		}
+	}
+
+	return false
 }
 
 func makeMove(board Board, row, col int, player string) Board {
